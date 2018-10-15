@@ -1,0 +1,10 @@
+#★★★第1课《如何用 Python 模糊搜索文件》
+#学习时间：2018-09-23
+import os
+path="D:\\世界那么大\\作业\\01、每日作业\\2018年\\视频\\2018-01-30"
+files=os.listdir(path)
+#print(files)
+print(files[0])
+for f in files :
+    if "答案" in f and f.endswith(".mp4"):
+        print(f)
