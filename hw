@@ -8,3 +8,182 @@ print(files[0])
 for f in files :
     if "答案" in f and f.endswith(".mp4"):
         print(f)
+
+#练习
+import os
+path="C:\\Users\\Ad\\Desktop\\测试\\01练习\\"
+files=os.listdir(path)
+#print(files)
+for f in files:
+    if (not f.endswith(".png")) and ("16" in f or "19" in f):
+        print(f)
+        
+#★★★第2课《如何用 Python 实现文件自动归类？》
+#学习时间：2018-09-23
+import os
+import shutil
+path="C:\\Users\\Ad\\Desktop\\测试\\02自动归类\\"
+files=os.listdir(path)
+for f in files:     
+    print("文件名后缀名为%s" % f)
+    folder_name=path+f.split(".")[-1]
+    print(folder_name)
+    if not os.path.exists(folder_name):         
+        os.makedirs(folder_name)        
+        shutil.move(path+f,folder_name)
+        #shutil.copy(f,folder_name)
+    else:   
+        shutil.move(path+f,folder_name)        
+        #print(folder_name)
+        
+#练习
+import os
+import shutil
+# 需要把路径替换成你的文件夹所在路径，当把这个代码文件放在要处理的文件夹外一层时，可以使用下面的相对路径写法
+path = './problem2_files'
+# 创建目标文件夹
+os.makedirs(path + '/image')
+os.makedirs(path + '/document')
+# 将需要处理的后缀名存储到list中
+image_suffix = ['jpg', 'png', 'gif']
+doc_suffix = ['doc', 'docx', 'ppt', 'md']
+# 移动jpg、png、gif文件中的文件
+for i in image_suffix:
+    cur_path = path + '/' + i
+    files = os.listdir(cur_path)
+    for f in files:
+        # 移动文件夹中的文件
+        # 注意move函数的第一个参数是path+'/'+f，不能是f。因为f只是文件名，不是路径
+        shutil.move(cur_path + '/' + f, path + '/image')
+    # 删除文件夹
+    os.removedirs(cur_path)
+# 移动doc、docx、md、ppt文件夹中的文件，步骤与前面类似
+for d in doc_suffix:
+    cur_path = path + '/' + d
+    files = os.listdir(cur_path)
+    for f in files:
+        shutil.move(cur_path + '/' + f, path + '/document')
+    os.removedirs(cur_path)
+    
+#练习
+import os
+import shutil
+path="C:\\Users\\Ad\\Desktop\\测试\\02练习\\"
+files=os.listdir(path)
+#print(files)
+image=['jpg','png']
+text=['doc','txt','ppt']
+os.makedirs(path+"image")  
+os.makedirs(path+"text")
+for f in files:
+    for i in image:
+        if f.endswith(i):
+            shutil.move(path+f,path+"image")
+    for i in text:
+        if f.endswith(i):
+            shutil.move(path+f,path+"text")
+            
+#★★★第3课《如何自动解压并删除压缩包》
+#学习时间：2018-09-24
+import os
+import shutil
+import time
+
+def scan_file():
+    for f in os.listdir("C:\\Users\\Ad\\Desktop\\解压\\"): #由于这里是当前路径，所以需要把这个代码文件和你要处理的文件放到同一个文件夹里
+        if f.endswith('.zip'):            
+            return f
+        
+def unzip_it(f):
+    folder_name = f.split('.')[0]  
+    print(folder_name)
+    target_path = os.path.join('C:\\Users\\Ad\\Desktop\\解压\\',folder_name)    
+    os.makedirs(target_path)
+    print(target_path)
+    shutil.unpack_archive('C:\\Users\\Ad\\Desktop\\解压\\'+f,target_path)
+
+def delete(f):    
+    os.remove('C:\\Users\\Ad\\Desktop\\解压\\'+f)
+    time.sleep(2)
+
+def a():
+    zip_file = scan_file()
+    print(zip_file)
+    if zip_file:
+        unzip_it(zip_file)
+        delete(zip_file)
+        time.sleep(3)
+a()
+
+#练习《自动压缩文件》
+import os
+import time
+from shutil import make_archive
+path="C:\\Users\\Ad\\Desktop\\测试\\03练习自动压缩\\"
+out_path="C:\\Users\\Ad\\Desktop\\测试\\03练习自动压缩存放\\"
+zip_count=0
+files=os.listdir(path)
+while True:
+    if len(files)>=5:
+        zip_count+=1
+        zip_name=out_path+"archive"+str(zip_count)
+        make_archive(zip_name,"zip",path)#◆◆:第三行代码使用的是“from shutil import make_archive”
+        for f in files:
+            os.remove(path+f)
+    time.sleep(10)   
+    
+#《如何删除重复文件》
+#学习时间：2018-09-26
+import os
+import filecmp
+
+# 需要把路径替换成你的文件夹所在路径，当把这个代码文件放在要处理的文件夹外一层时，可以使用下面的相对路径写法
+path = 'C:\\Users\\Ad\\Desktop\\删除重复文件\\'
+# 已知路径下存在两个文件夹pic1和pic2
+dirs = ['pic1','pic2']
+
+# 将指定目录下的所有文件的路径存储到all_files变量中
+def get_all_files(path, dirs):
+    all_files = []
+    for d in dirs:
+        cur_path = os.path.join(path, d)
+        files = os.listdir(cur_path)
+        for f in files:
+            all_files.append(os.path.join(cur_path, f))
+    return all_files
+
+# 比较两个文件的内容是否一致
+def cmp_files(x, y):
+    if filecmp.cmp(x, y):
+        # 如果一致，则删除第二个，保留第一个，并输出信息
+        os.remove(y)
+        print("路径\"" + y + "\"下的文件是重复文件，已经删除")
+
+# 调用函数，获取文件列表
+all_files = get_all_files(path, dirs)
+# 用双重for循环来比较文件是否有重复
+for x in all_files:
+    for y in all_files:
+        # 如果x和y不是相同的文件，而且都存在，则执行后续操作
+        if x != y and os.path.exists(x) and os.path.exists(y):
+            # 比较两个文件的内容是否一致
+           cmp_files(x,y)
+           
+#★★★第1课《如何监测 GitHub 项目更新并自动打开网页？》
+#学习时间：2018-10-15
+import requests
+import webbrowser
+import time
+api="https://api.github.com/repos/channelcat/sanic"
+web_page="https://github.com/channelcat/sanic"
+#last_date=None
+last_date="2018-03-14T09:11:27Z"
+all_info=requests.get(api).json()
+cur_date=all_info['updated_at']
+print(cur_date)
+while True:
+    if not last_date:
+        last_date=cur_date
+    if last_date<cur_date:
+        webbrowser.open(web_page)
+    time.sleep(10)
